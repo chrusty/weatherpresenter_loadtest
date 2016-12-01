@@ -30,7 +30,7 @@ func (tester Tester) Run() {
 
 	// Get the address of the machine we're supposed to test:
 	machineAddresses := strings.Split(tester.Config.MachineAddresses, ",")
-	if len(machineAddresses) < tester.MachineNumber {
+	if len(machineAddresses) <= tester.MachineNumber {
 		log.WithFields(logrus.Fields{"machine_addresses": len(machineAddresses), "machine_number": tester.MachineNumber}).Warn("Not enough machine-addresses provided to support the requested concurrency")
 		return
 	} else {
