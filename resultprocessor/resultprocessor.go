@@ -1,9 +1,10 @@
 package resultprocessor
 
 import (
-	"os"
-	"os/signal"
-	"sync"
+	os "os"
+	signal "os/signal"
+	sync "sync"
+	time "time"
 
 	config "github.com/chrusty/weatherpresenter_loadtest/config"
 	types "github.com/chrusty/weatherpresenter_loadtest/types"
@@ -14,11 +15,33 @@ import (
 var (
 	log      = logrus.WithFields(logrus.Fields{"logger": "Result-processor"})
 	myConfig config.Config
+	report   = Report{
+		AverageDuration:    0 * time.Second,
+		Errors:             0,
+		MaximumDuration:    0 * time.Second,
+		MinimumDuration:    24 * time.Hour,
+		Results:            []types.Result{},
+		Successes:          0,
+		TimeOuts:           0,
+		TotalDurationNanos: 0,
+	}
+	reportMutex sync.Mutex
 )
 
 func init() {
 	// Set the log-level:
 	logrus.SetLevel(logrus.DebugLevel)
+}
+
+type Report struct {
+	AverageDuration    time.Duration
+	Errors             int
+	MaximumDuration    time.Duration
+	MinimumDuration    time.Duration
+	Results            []types.Result
+	Successes          int
+	TimeOuts           int
+	TotalDurationNanos int64
 }
 
 func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitGroup *sync.WaitGroup) {
@@ -40,7 +63,37 @@ func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitG
 			case result := <-resultsChannel:
 
 				// Log the result:
-				log.WithFields(logrus.Fields{"duration": result.Duration, "machine_address": result.MachineAddress, "response_code": result.ResponseCode, "test_name": result.TestName, "timed_out": result.TimedOut}).Debug("Received a result")
+				if myConfig.Debug {
+					log.WithFields(logrus.Fields{"duration": result.Duration, "machine_address": result.MachineAddress, "response_code": result.ResponseCode, "test_name": result.TestName, "timed_out": result.TimedOut}).Debug("Received a result")
+				}
+
+				// Lock the report:
+				reportMutex.Lock()
+
+				// Add the result to the report:
+				report.Results = append(report.Results, result)
+
+				// Update counters and aggregates:
+				report.TotalDurationNanos += result.Duration.Nanoseconds()
+				report.AverageDuration = time.Duration(report.TotalDurationNanos / int64(len(report.Results)))
+				if result.Duration < report.MinimumDuration {
+					report.MinimumDuration = result.Duration
+				}
+				if result.Duration > report.MaximumDuration {
+					report.MaximumDuration = result.Duration
+				}
+				if result.TimedOut {
+					report.TimeOuts++
+				}
+				if result.Error != nil {
+					report.Errors++
+				} else {
+					report.Successes++
+				}
+
+				// Unock the report:
+				reportMutex.Unlock()
+
 			}
 		}
 	}()
@@ -57,4 +110,19 @@ func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitG
 		}
 	}
 
+}
+
+func DumpResults() {
+	// Get a lock on the report (because it could be changed in the background if we call this when the tests are still running):
+	reportMutex.Lock()
+	defer reportMutex.Unlock()
+
+	// Log the report:
+	log.WithFields(logrus.Fields{"tests_run": len(report.Results)}).Info("Report")
+	log.WithFields(logrus.Fields{"test_errors": report.Errors}).Info("Report")
+	log.WithFields(logrus.Fields{"test_timeouts": report.TimeOuts}).Info("Report")
+	log.WithFields(logrus.Fields{"test_successes": report.Successes}).Info("Report")
+	log.WithFields(logrus.Fields{"duration_minimum": report.MinimumDuration}).Info("Report")
+	log.WithFields(logrus.Fields{"duration_average": report.AverageDuration}).Info("Report")
+	log.WithFields(logrus.Fields{"duration_maximum": report.MaximumDuration}).Info("Report")
 }

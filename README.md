@@ -5,9 +5,10 @@ MeteoGroup WeatherPresenter load-testing tool
 Parameters
 ----------
 * __concurrency__: How many concurrent tests to run [_1_]
-* __iterations__: Number of times to run each tests (0 = forever) [_0_]
+* __debug__: Run in DEBUG mode [_false_]
+* __iterations__: Number of times to run each tests [_10_]
 * __keepalive__: How often to send keepalive packets [_5s_]
-* __machines__: Comma-delimited list of WeatherPresenter machines to use [_localhost_]
+* __addresses__: Comma-delimited list of WeatherPresenter web-remote API addresses to use [_http://localhost:34567_]
 * __playlist__: Full path to a playlist to use
 * __testloadplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_true_]
 * __testpopulateplaylist__: Result [_false_]

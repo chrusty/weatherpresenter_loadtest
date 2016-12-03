@@ -25,7 +25,8 @@ func init() {
 	flag.DurationVar(&conf.APIKeepAlive, "keepalive", 5*time.Second, "How often to send keepalive packets")
 	flag.DurationVar(&conf.APITimeout, "timeout", 300*time.Second, "How long to wait for connections before timing out")
 	flag.IntVar(&conf.Concurrency, "concurrency", 1, "Number of concurrent tests to run")
-	flag.IntVar(&conf.Iterations, "iterations", 0, "Number of times to run each tests (0 = forever)")
+	flag.BoolVar(&conf.Debug, "debug", false, "Run in DEBUG mode")
+	flag.IntVar(&conf.Iterations, "iterations", 10, "Number of times to run each tests")
 	flag.StringVar(&conf.MachineAddresses, "addresses", "http://playout-1:34567,http://playout-2:34567", "Comma-delimited list of WeatherPresenter machines to use")
 	flag.StringVar(&conf.PlaylistFile, "playlist", `\\server\playlists\playlist.dlp`, "Full path to a playlist to use")
 	flag.BoolVar(&conf.TestLoadPlaylist, "testloadplaylist", false, "Run the 'load playlist' test (simply loads the playlist from disk)")
@@ -43,6 +44,7 @@ func dumpConfig() {
 	// Dump the config:
 	log.WithFields(logrus.Fields{"addresses": conf.MachineAddresses}).Debug("Config")
 	log.WithFields(logrus.Fields{"concurrency": conf.Concurrency}).Debug("Config")
+	log.WithFields(logrus.Fields{"debug": conf.Debug}).Debug("Config")
 	log.WithFields(logrus.Fields{"iterations": conf.Iterations}).Debug("Config")
 	log.WithFields(logrus.Fields{"keepalive": conf.APIKeepAlive}).Debug("Config")
 	log.WithFields(logrus.Fields{"playlist": conf.PlaylistFile}).Debug("Config")
@@ -53,17 +55,11 @@ func dumpConfig() {
 
 func main() {
 
-	// Make sure we wait for everything to complete before bailing out:
-	defer waitGroup.Wait()
-
 	// Prepare a channel of results (to feed the resultprocessor):
 	log.Info("Preparing the results channel")
 	resultsChannel := make(chan types.Result)
 
-	// Prepare to have background GoRoutines running:
-	waitGroup.Add(1)
-
-	// Start webhook server:
+	// Start the result processor in the background:
 	go resultprocessor.Run(conf, resultsChannel, waitGroup)
 
 	// Start enough testers to meet the concurrency parameter:
@@ -74,10 +70,18 @@ func main() {
 			Config:         conf,
 			MachineNumber:  machineNumber,
 			ResultsChannel: resultsChannel,
+			WaitGroup:      waitGroup,
 		}
 
 		// Run it in the background:
+		waitGroup.Add(1)
 		go testers[machineNumber].Run()
 	}
 
+	// Make sure we wait for everything to complete before bailing out:
+	waitGroup.Wait()
+	time.Sleep(1 * time.Second)
+
+	// Report the results:
+	resultprocessor.DumpResults()
 }
