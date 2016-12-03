@@ -1,4 +1,4 @@
-package resultprocessor
+package testaburger
 
 import (
 	net "net"
@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	log      = logrus.WithFields(logrus.Fields{"logger": "testaburger"})
-	myConfig config.Config
+	log = logrus.WithFields(logrus.Fields{"logger": "testaburger"})
 )
 
 func init() {
@@ -66,13 +65,20 @@ func (tester Tester) Run() {
 			}
 
 			// Run the appropriate test:
-			if tester.Config.TestLoadPlaylist {
-				tester.ResultsChannel <- tester.testloadplaylist(result)
-			} else if tester.Config.TestPopulatePlaylist {
-				tester.ResultsChannel <- tester.testloadplaylist(result)
+			if tester.Config.TestOpenPlaylist {
+				tester.testOpenPlaylist(&result)
+			} else if tester.Config.TestOpenPopulatePlaylist {
+				tester.testOpenAndPopulatePlaylist(&result)
 			} else {
 				log.Error("You need to choose a test to run!")
 			}
+
+			// Submit the result:
+			tester.ResultsChannel <- result
+
+			// Sleep:
+			log.WithFields(logrus.Fields{"machine_addresses": len(machineAddresses), "sleep_duration": tester.Config.SleepBetweenTests, "iteration": iteration}).Debug("Sleeping")
+			time.Sleep(tester.Config.SleepBetweenTests)
 
 		}
 

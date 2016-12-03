@@ -27,10 +27,11 @@ func init() {
 	flag.IntVar(&conf.Concurrency, "concurrency", 1, "Number of concurrent tests to run")
 	flag.BoolVar(&conf.Debug, "debug", false, "Run in DEBUG mode")
 	flag.IntVar(&conf.Iterations, "iterations", 10, "Number of times to run each tests")
-	flag.StringVar(&conf.MachineAddresses, "addresses", "http://playout-1:34567,http://playout-2:34567", "Comma-delimited list of WeatherPresenter machines to use")
+	flag.StringVar(&conf.MachineAddresses, "addresses", "http://localhost:34567", "Comma-delimited list of WeatherPresenter machines to use")
 	flag.StringVar(&conf.PlaylistFile, "playlist", `\\server\playlists\playlist.dlp`, "Full path to a playlist to use")
-	flag.BoolVar(&conf.TestLoadPlaylist, "testloadplaylist", false, "Run the 'load playlist' test (simply loads the playlist from disk)")
-	flag.BoolVar(&conf.TestPopulatePlaylist, "testpopulateplaylist", true, "Run the 'populate playlist' test (loads the playlist from disk, switches to 'Edit' mode, then closes the playlist)")
+	flag.DurationVar(&conf.SleepBetweenTests, "sleep", 2*time.Second, "How long to sleep after running each test")
+	flag.BoolVar(&conf.TestOpenPlaylist, "testopenplaylist", false, "Run the 'open playlist' test (simply loads the playlist from disk)")
+	flag.BoolVar(&conf.TestOpenPopulatePlaylist, "testopenpopulateplaylist", true, "Run the 'open & populate playlist' test (loads the playlist from disk, switches to 'Edit' mode, then closes the playlist)")
 	flag.Parse()
 
 	// Set the log-level:
@@ -48,8 +49,9 @@ func dumpConfig() {
 	log.WithFields(logrus.Fields{"iterations": conf.Iterations}).Debug("Config")
 	log.WithFields(logrus.Fields{"keepalive": conf.APIKeepAlive}).Debug("Config")
 	log.WithFields(logrus.Fields{"playlist": conf.PlaylistFile}).Debug("Config")
-	log.WithFields(logrus.Fields{"testloadplaylist": conf.TestLoadPlaylist}).Debug("Config")
-	log.WithFields(logrus.Fields{"testpopulateplaylist": conf.TestPopulatePlaylist}).Debug("Config")
+	log.WithFields(logrus.Fields{"sleep": conf.SleepBetweenTests}).Debug("Config")
+	log.WithFields(logrus.Fields{"testopenplaylist": conf.TestOpenPlaylist}).Debug("Config")
+	log.WithFields(logrus.Fields{"testopenpopulateplaylist": conf.TestOpenPopulatePlaylist}).Debug("Config")
 	log.WithFields(logrus.Fields{"timeout": conf.APITimeout}).Debug("Config")
 }
 
@@ -80,7 +82,6 @@ func main() {
 
 	// Make sure we wait for everything to complete before bailing out:
 	waitGroup.Wait()
-	time.Sleep(1 * time.Second)
 
 	// Report the results:
 	resultprocessor.DumpResults()

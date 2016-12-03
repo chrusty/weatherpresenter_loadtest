@@ -1,6 +1,6 @@
 
-MeteoGroup WeatherPresenter load-testing tool
-=============================================
+WeatherPresenter load-testing tool
+==================================
 
 Parameters
 ----------
@@ -10,8 +10,9 @@ Parameters
 * __keepalive__: How often to send keepalive packets [_5s_]
 * __addresses__: Comma-delimited list of WeatherPresenter web-remote API addresses to use [_http://localhost:34567_]
 * __playlist__: Full path to a playlist to use
-* __testloadplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_true_]
-* __testpopulateplaylist__: Result [_false_]
+* __sleep__: How long to sleep after running each test [_2s_]
+* __testopenplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_true_]
+* __testopenpopulateplaylist__: Result [_false_]
 * __timeout__: How long to wait for connections before timing out [_300s_]
 
 
