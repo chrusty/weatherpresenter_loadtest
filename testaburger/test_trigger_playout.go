@@ -9,16 +9,16 @@ import (
 	logrus "github.com/Sirupsen/logrus"
 )
 
-func (tester Tester) testOpenPlaylist(result *types.Result) {
+func (tester Tester) testTriggerPlayout(result *types.Result) {
 
 	// Give the result a test-name:
-	result.TestName = "open_playlist"
+	result.TestName = "trigger_playout"
 
-	// Close the current playlis:
-	tester.closePlaylist(result)
+	// Rewind playout on the current playlist:
+	tester.rewindPlayout(result)
 
-	// Open the configured playlist:
-	tester.openPlaylist(result)
+	// Trigger playout on the current playlist:
+	tester.triggerPlayout(result)
 
 	// Calculate how long the request took:
 	result.Duration = time.Since(result.RequestTime)

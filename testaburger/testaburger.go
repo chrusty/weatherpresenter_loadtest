@@ -65,19 +65,20 @@ func (tester Tester) Run() {
 			}
 
 			// Run the appropriate test:
-			if tester.Config.TestOpenPlaylist {
-				tester.testOpenPlaylist(&result)
-			} else if tester.Config.TestOpenPopulatePlaylist {
+			if tester.Config.TestOpenPopulatePlaylist {
 				tester.testOpenAndPopulatePlaylist(&result)
+			} else if tester.Config.TestTriggerPlaylist {
+				tester.testTriggerPlayout(&result)
 			} else {
-				log.Error("You need to choose a test to run!")
+				log.Warn("You need to choose a test to run! (running Open-Playlist test by default)")
+				tester.testOpenPlaylist(&result)
 			}
 
 			// Submit the result:
 			tester.ResultsChannel <- result
 
 			// Sleep:
-			log.WithFields(logrus.Fields{"machine_addresses": len(machineAddresses), "sleep_duration": tester.Config.SleepBetweenTests, "iteration": iteration}).Debug("Sleeping")
+			log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "sleep_duration": tester.Config.SleepBetweenTests, "iteration": iteration}).Debug("Sleeping")
 			time.Sleep(tester.Config.SleepBetweenTests)
 
 		}

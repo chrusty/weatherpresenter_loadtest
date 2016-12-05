@@ -15,4 +15,5 @@ type Config struct {
 	SleepBetweenTests        time.Duration
 	TestOpenPlaylist         bool
 	TestOpenPopulatePlaylist bool
+	TestTriggerPlaylist      bool
 }

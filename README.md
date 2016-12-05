@@ -11,8 +11,9 @@ Parameters
 * __addresses__: Comma-delimited list of WeatherPresenter web-remote API addresses to use [_http://localhost:34567_]
 * __playlist__: Full path to a playlist to use
 * __sleep__: How long to sleep after running each test [_2s_]
-* __testopenplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_true_]
-* __testopenpopulateplaylist__: Result [_false_]
+* __testopenplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_false_]
+* __testopenpopulateplaylist__: Run the 'open & populate playlist' test (closes the playlist loads the playlist from disk, sleeps, switches to 'Edit' mode) [_false_]
+* __testtriggerplaylist__: Triggers REWIND then PLAY on the currently-loaded playlist, then sleeps [_false_]
 * __timeout__: How long to wait for connections before timing out [_300s_]
 
 

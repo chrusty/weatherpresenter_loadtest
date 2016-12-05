@@ -23,9 +23,9 @@ func (tester Tester) testOpenAndPopulatePlaylist(result *types.Result) {
 	// Cast a net/url error (so we can check for timeouts):
 	if netURLError, ok := result.Error.(*url.Error); ok && netURLError.Timeout() {
 		result.TimedOut = true
-		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": "Open-playlist"}).Warn("Timed-out making API request to WeatherPresenter")
+		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": result.TestName}).Warn("Timed-out making API request to WeatherPresenter")
 	} else if result.Error != nil {
-		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": "Open-playlist"}).Error("Error making API request to WeatherPresenter")
+		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": result.TestName}).Error("Error making API request to WeatherPresenter")
 	}
 
 	// Bail if we had any error at all:
@@ -33,6 +33,10 @@ func (tester Tester) testOpenAndPopulatePlaylist(result *types.Result) {
 		// Calculate how long the request took:
 		result.Duration = time.Since(result.RequestTime)
 		return
+	} else {
+		// Sleep:
+		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "sleep_duration": tester.Config.SleepBetweenTests}).Debug("Sleeping between API-calls")
+		time.Sleep(tester.Config.SleepBetweenTests)
 	}
 
 	// Populate the opened playlist:
@@ -41,11 +45,11 @@ func (tester Tester) testOpenAndPopulatePlaylist(result *types.Result) {
 	// Cast a net/url error (so we can check for timeouts):
 	if netURLError, ok := result.Error.(*url.Error); ok && netURLError.Timeout() {
 		result.TimedOut = true
-		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": "Populate-playlist"}).Warn("Timed-out making API request to WeatherPresenter")
+		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": result.TestName}).Warn("Timed-out making API request to WeatherPresenter")
 	} else if result.Error != nil {
-		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": "Populate-playlist"}).Error("Error making API request to WeatherPresenter")
+		log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "error": result.Error, "stage": result.TestName}).Error("Error making API request to WeatherPresenter")
 	}
 
 	// Calculate how long the request took:
-	result.Duration = time.Since(result.RequestTime)
+	result.Duration = time.Since(result.RequestTime) - tester.Config.SleepBetweenTests
 }

@@ -31,7 +31,8 @@ func init() {
 	flag.StringVar(&conf.PlaylistFile, "playlist", `\\server\playlists\playlist.dlp`, "Full path to a playlist to use")
 	flag.DurationVar(&conf.SleepBetweenTests, "sleep", 2*time.Second, "How long to sleep after running each test")
 	flag.BoolVar(&conf.TestOpenPlaylist, "testopenplaylist", false, "Run the 'open playlist' test (simply loads the playlist from disk)")
-	flag.BoolVar(&conf.TestOpenPopulatePlaylist, "testopenpopulateplaylist", true, "Run the 'open & populate playlist' test (loads the playlist from disk, switches to 'Edit' mode, then closes the playlist)")
+	flag.BoolVar(&conf.TestOpenPopulatePlaylist, "testopenpopulateplaylist", false, "Run the 'open & populate playlist' test (closes the playlist loads the playlist from disk, sleeps, switches to 'Edit' mode)")
+	flag.BoolVar(&conf.TestTriggerPlaylist, "testtriggerplaylist", false, "Triggers REWIND then PLAY on the currently-loaded playlist, then sleeps")
 	flag.Parse()
 
 	// Set the log-level:
@@ -52,6 +53,7 @@ func dumpConfig() {
 	log.WithFields(logrus.Fields{"sleep": conf.SleepBetweenTests}).Debug("Config")
 	log.WithFields(logrus.Fields{"testopenplaylist": conf.TestOpenPlaylist}).Debug("Config")
 	log.WithFields(logrus.Fields{"testopenpopulateplaylist": conf.TestOpenPopulatePlaylist}).Debug("Config")
+	log.WithFields(logrus.Fields{"testtriggerplaylist": conf.TestTriggerPlaylist}).Debug("Config")
 	log.WithFields(logrus.Fields{"timeout": conf.APITimeout}).Debug("Config")
 }
 
