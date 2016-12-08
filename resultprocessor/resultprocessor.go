@@ -29,7 +29,11 @@ var (
 )
 
 func init() {
-	// Set the log-level:
+	// Set up the logrus logger:
+	customFormatter := new(logrus.TextFormatter)
+	customFormatter.TimestampFormat = "2006-01-02 15:04:05"
+	customFormatter.FullTimestamp = true
+	logrus.SetFormatter(customFormatter)
 	logrus.SetLevel(logrus.DebugLevel)
 }
 
