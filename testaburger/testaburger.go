@@ -3,7 +3,6 @@ package testaburger
 import (
 	net "net"
 	http "net/http"
-	os "os"
 	strings "strings"
 	sync "sync"
 	time "time"
@@ -25,7 +24,6 @@ func init() {
 	customFormatter.FullTimestamp = true
 	logrus.SetFormatter(customFormatter)
 	logrus.SetLevel(logrus.DebugLevel)
-	logrus.SetOutput(os.Stdout)
 }
 
 type Tester struct {

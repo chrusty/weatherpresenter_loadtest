@@ -90,5 +90,6 @@ func main() {
 	waitGroup.Wait()
 
 	// Report the results:
-	resultprocessor.DumpResults()
+	resultprocessor.ReportSummary()
+	resultprocessor.ProduceCSV()
 }
