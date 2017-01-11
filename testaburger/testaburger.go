@@ -79,6 +79,12 @@ func (tester Tester) Run() {
 			// Submit the result:
 			tester.ResultsChannel <- result
 
+			// Cancel subsequent tests if we got an error:
+			if result.Error != nil {
+				log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "iteration": iteration}).Warn("Cancelling subsequent tests")
+				break
+			}
+
 			// Sleep:
 			log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "sleep_duration": tester.Config.SleepBetweenTests, "iteration": iteration}).Debug("Sleeping")
 			time.Sleep(tester.Config.SleepBetweenTests)
