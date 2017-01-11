@@ -20,5 +20,5 @@ type Result struct {
 
 func (result Result) Print(myConfig config.Config) {
 	// Print the result as a CSV line:
-	fmt.Printf("\"%s\",\"%s\",\"%s\",%d,%d,%d,%s,\"%s\"\n", result.RequestTime, result.TestName, result.MachineAddress, myConfig.Concurrency, result.Duration, result.ResponseCode, strconv.FormatBool(result.TimedOut), result.Error)
+	fmt.Printf("\"%s\",\"%s\",\"%s\",%d,%f,%d,%s,\"%s\"\n", result.RequestTime, result.TestName, result.MachineAddress, myConfig.Concurrency, result.Duration.Seconds(), result.ResponseCode, strconv.FormatBool(result.TimedOut), result.Error)
 }

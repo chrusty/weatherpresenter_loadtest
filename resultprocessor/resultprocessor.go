@@ -57,7 +57,7 @@ func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitG
 	myConfig = myConfigFromMain
 
 	// Print the CSV header:
-	fmt.Println(`"Request Time","Test Name","Machine Address","Concurrency","Duration (ns)","HTTP Response Code","Timed Out?","Error?"`)
+	fmt.Println(`"Request Time","Test Name","Machine Address","Concurrency","Duration (s)","HTTP Response Code","Timed Out?","Error?"`)
 
 	// Set up a channel to handle shutdown:
 	signals := make(chan os.Signal, 1)
