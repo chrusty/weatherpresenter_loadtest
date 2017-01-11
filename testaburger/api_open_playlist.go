@@ -14,7 +14,7 @@ func (tester Tester) openPlaylist(result *types.Result) error {
 	log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "playlist": tester.Config.PlaylistFile}).Debug("Opening the configured playlist")
 
 	// Build a request:
-	openPlayListURL := fmt.Sprintf("%s/weatherpresenter/OpenPlaylist", result.MachineAddress)
+	openPlayListURL := fmt.Sprintf("http://%s:34567/weatherpresenter/OpenPlaylist", result.MachineAddress)
 	request, _ := http.NewRequest("GET", openPlayListURL, nil)
 
 	// Add the query-parameters:

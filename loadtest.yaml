@@ -1,0 +1,11 @@
+keepalive: 5s
+timeout: 300s
+concurrency: 2
+debug: false
+iterations: 5
+addresses:
+ - playout1
+ - playout2
+playlist: \\server\playlists\playlist.dlp
+sleep: 2s
+testopenpopulateplaylist: true

@@ -1,6 +1,7 @@
 package resultprocessor
 
 import (
+	fmt "fmt"
 	os "os"
 	signal "os/signal"
 	sync "sync"
@@ -55,6 +56,9 @@ func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitG
 	// Populate the config:
 	myConfig = myConfigFromMain
 
+	// Print the CSV header:
+	fmt.Println(`"Request Time","Test Name","Machine Address","Concurrency","Duration (ns)","HTTP Response Code","Timed Out?","Error?"`)
+
 	// Set up a channel to handle shutdown:
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Kill, os.Interrupt)
@@ -73,6 +77,9 @@ func Run(myConfigFromMain config.Config, resultsChannel chan types.Result, waitG
 
 				// Lock the report:
 				reportMutex.Lock()
+
+				// Immediately print the result as CSV output:
+				result.Print(myConfigFromMain)
 
 				// Add the result to the report:
 				report.Results = append(report.Results, result)

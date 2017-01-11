@@ -14,7 +14,7 @@ func (tester Tester) populatePlaylist(result *types.Result) error {
 	log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "playlist": tester.Config.PlaylistFile}).Debug("Setting presentation-state to 'Editing'")
 
 	// Build a request:
-	populatePlayListURL := fmt.Sprintf("%s/weatherpresenter/SetPresentationState", result.MachineAddress)
+	populatePlayListURL := fmt.Sprintf("http://%s:34567/weatherpresenter/SetPresentationState", result.MachineAddress)
 	request, _ := http.NewRequest("GET", populatePlayListURL, nil)
 
 	// Add the query-parameters:

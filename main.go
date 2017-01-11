@@ -3,7 +3,7 @@ package main
 import (
 	flag "flag"
 	sync "sync"
-	time "time"
+	// time "time"
 
 	config "github.com/chrusty/weatherpresenter_loadtest/config"
 	resultprocessor "github.com/chrusty/weatherpresenter_loadtest/resultprocessor"
@@ -22,17 +22,8 @@ var (
 
 func init() {
 	// Process the command-line parameters:
-	flag.DurationVar(&conf.APIKeepAlive, "keepalive", 5*time.Second, "How often to send keepalive packets")
-	flag.DurationVar(&conf.APITimeout, "timeout", 300*time.Second, "How long to wait for connections before timing out")
-	flag.IntVar(&conf.Concurrency, "concurrency", 1, "Number of concurrent tests to run")
+	flag.StringVar(&conf.ConfFile, "configfile", "loadtest.yaml", "Name of a config-file to load")
 	flag.BoolVar(&conf.Debug, "debug", false, "Run in DEBUG mode")
-	flag.IntVar(&conf.Iterations, "iterations", 10, "Number of times to run each tests")
-	flag.StringVar(&conf.MachineAddresses, "addresses", "http://localhost:34567", "Comma-delimited list of WeatherPresenter machines to use")
-	flag.StringVar(&conf.PlaylistFile, "playlist", `\\server\playlists\playlist.dlp`, "Full path to a playlist to use")
-	flag.DurationVar(&conf.SleepBetweenTests, "sleep", 2*time.Second, "How long to sleep after running each test")
-	flag.BoolVar(&conf.TestOpenPlaylist, "testopenplaylist", false, "Run the 'open playlist' test (simply loads the playlist from disk)")
-	flag.BoolVar(&conf.TestOpenPopulatePlaylist, "testopenpopulateplaylist", false, "Run the 'open & populate playlist' test (closes the playlist loads the playlist from disk, sleeps, switches to 'Edit' mode)")
-	flag.BoolVar(&conf.TestTriggerPlaylist, "testtriggerplaylist", false, "Triggers REWIND then PLAY on the currently-loaded playlist, then sleeps")
 	flag.Parse()
 
 	// Set up the logrus logger:
@@ -42,6 +33,9 @@ func init() {
 	logrus.SetFormatter(customFormatter)
 	logrus.SetLevel(logrus.DebugLevel)
 
+	// Attempt to load config from file:
+	conf.LoadFromFile()
+
 	// Dump the config to the log:
 	dumpConfig()
 }
@@ -50,6 +44,7 @@ func dumpConfig() {
 	// Dump the config:
 	log.WithFields(logrus.Fields{"addresses": conf.MachineAddresses}).Debug("Config")
 	log.WithFields(logrus.Fields{"concurrency": conf.Concurrency}).Debug("Config")
+	log.WithFields(logrus.Fields{"configfile": conf.ConfFile}).Debug("Config")
 	log.WithFields(logrus.Fields{"debug": conf.Debug}).Debug("Config")
 	log.WithFields(logrus.Fields{"iterations": conf.Iterations}).Debug("Config")
 	log.WithFields(logrus.Fields{"keepalive": conf.APIKeepAlive}).Debug("Config")
@@ -91,5 +86,4 @@ func main() {
 
 	// Report the results:
 	resultprocessor.ReportSummary()
-	resultprocessor.ProduceCSV()
 }

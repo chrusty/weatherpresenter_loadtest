@@ -13,7 +13,7 @@ func (tester Tester) rewindPlayout(result *types.Result) error {
 	log.WithFields(logrus.Fields{"machine_address": result.MachineAddress}).Debug("Playout: REWIND")
 
 	// Build a request:
-	rewindPlayoutURL := fmt.Sprintf("%s/weatherpresenter/rewind", result.MachineAddress)
+	rewindPlayoutURL := fmt.Sprintf("http://%s:34567/weatherpresenter/rewind", result.MachineAddress)
 
 	// Make the request:
 	_, err := tester.HttpClient.Get(rewindPlayoutURL)

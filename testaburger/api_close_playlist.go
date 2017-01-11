@@ -13,7 +13,7 @@ func (tester Tester) closePlaylist(result *types.Result) error {
 	log.WithFields(logrus.Fields{"machine_address": result.MachineAddress}).Debug("Closing the current playlist")
 
 	// Build a request:
-	closePlayListURL := fmt.Sprintf("%s/weatherpresenter/ClosePlaylist", result.MachineAddress)
+	closePlayListURL := fmt.Sprintf("http://%s:34567/weatherpresenter/ClosePlaylist", result.MachineAddress)
 
 	// Make the request:
 	_, err := tester.HttpClient.Get(closePlayListURL)

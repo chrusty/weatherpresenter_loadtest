@@ -4,17 +4,14 @@ WeatherPresenter load-testing tool
 
 Parameters
 ----------
-* __concurrency__: How many concurrent tests to run [_1_]
 * __debug__: Run in DEBUG mode [_false_]
-* __iterations__: Number of times to run each tests [_10_]
-* __keepalive__: How often to send keepalive packets [_5s_]
-* __addresses__: Comma-delimited list of WeatherPresenter web-remote API addresses to use [_http://localhost:34567_]
-* __playlist__: Full path to a playlist to use
-* __sleep__: How long to sleep after running each test [_2s_]
-* __testopenplaylist__: Run the "load playlist" test (simply loads the playlist from disk) [_false_]
-* __testopenpopulateplaylist__: Run the 'open & populate playlist' test (closes the playlist loads the playlist from disk, sleeps, switches to 'Edit' mode) [_false_]
-* __testtriggerplaylist__: Triggers REWIND then PLAY on the currently-loaded playlist, then sleeps [_false_]
-* __timeout__: How long to wait for connections before timing out [_300s_]
+* __conffile__: Name of a config-file to load [_loadtest.yaml_]
+
+
+How to use
+----------
+* Make a config file
+* Run the loadtest and direct stdout to a .csv file: `weatherpresenter_loadtest >results.csv`
 
 
 WeatherPresenter Web-remote API

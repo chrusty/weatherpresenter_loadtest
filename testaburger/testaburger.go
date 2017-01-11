@@ -3,7 +3,6 @@ package testaburger
 import (
 	net "net"
 	http "net/http"
-	strings "strings"
 	sync "sync"
 	time "time"
 
@@ -37,12 +36,11 @@ type Tester struct {
 func (tester Tester) Run() {
 
 	// Get the address of the machine we're supposed to test:
-	machineAddresses := strings.Split(tester.Config.MachineAddresses, ",")
-	if len(machineAddresses) <= tester.MachineNumber {
-		log.WithFields(logrus.Fields{"machine_addresses": len(machineAddresses), "machine_number": tester.MachineNumber}).Warn("Not enough machine-addresses provided to support the requested concurrency")
+	if len(tester.Config.MachineAddresses) <= tester.MachineNumber {
+		log.WithFields(logrus.Fields{"machine_addresses": len(tester.Config.MachineAddresses), "machine_number": tester.MachineNumber}).Warn("Not enough machine-addresses provided to support the requested concurrency")
 		return
 	} else {
-		machineAddress := machineAddresses[tester.MachineNumber]
+		machineAddress := tester.Config.MachineAddresses[tester.MachineNumber]
 
 		log.WithFields(logrus.Fields{"machine_address": machineAddress, "machine_number": tester.MachineNumber}).Info("Running tests against a WeatherPresenter machine")
 
