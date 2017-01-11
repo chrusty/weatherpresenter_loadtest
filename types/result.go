@@ -19,9 +19,6 @@ type Result struct {
 }
 
 func (result Result) Print(myConfig config.Config) {
-	// Turn duration into seconds:
-	friendlyDuration := result.Duration / 1000000
-
 	// Print the result as a CSV line:
-	fmt.Printf("\"%s\",\"%s\",\"%s\",%d,%f,%d,%s,\"%s\"\n", result.RequestTime, result.TestName, result.MachineAddress, myConfig.Concurrency, friendlyDuration, result.ResponseCode, strconv.FormatBool(result.TimedOut), result.Error)
+	fmt.Printf("\"%s\",\"%s\",\"%s\",%d,%d,%d,%s,\"%s\"\n", result.RequestTime, result.TestName, result.MachineAddress, myConfig.Concurrency, result.Duration, result.ResponseCode, strconv.FormatBool(result.TimedOut), result.Error)
 }

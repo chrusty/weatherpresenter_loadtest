@@ -82,7 +82,8 @@ func (tester Tester) Run() {
 			// Cancel subsequent tests if we got an error:
 			if result.Error != nil {
 				log.WithFields(logrus.Fields{"machine_address": result.MachineAddress, "iteration": iteration}).Warn("Cancelling subsequent tests")
-				break
+				tester.WaitGroup.Done()
+				return
 			}
 
 			// Sleep:
