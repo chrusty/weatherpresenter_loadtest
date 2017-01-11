@@ -11,16 +11,16 @@ KEEPALIVE_TIME=5
 # Quit if we find a known file:
 if [ -f $DISABLEFILE ]
 then
-	echo "`date`,[ERROR],,,,Tests are disabled (presence of ${DISABLEFILE}) - Exiting ..." >>$LOG_FILE
+	echo "`date`,[ERROR],,,,,Tests are disabled (presence of ${DISABLEFILE}) - Exiting ..." >>$LOG_FILE
 	exit
 else
-	echo "`date`,[INFO],,,,Scheduled test begins ..." >>$LOG_FILE
+	echo "`date`,[INFO],${WP_HOSTNAME},${TEST_ID},,${PLAYLIST_FILEPATH},Scheduled test begins ..." >>$LOG_FILE
 fi
 
 # Make sure we've been given a parameter:
 if [ $# -lt 1 ]
 then
-	echo "`date`,[ERROR],,,,Please provide a parameter (WP_HOSTNAME)! Exiting ..." >>$LOG_FILE
+	echo "`date`,[ERROR],,,,,Please provide a parameter (WP_HOSTNAME)! Exiting ..." >>$LOG_FILE
 	exit
 fi
 
@@ -51,11 +51,12 @@ TIME_BEGIN=`date +%s`
 
 # Close the current playlist, then sleep to allow the action to complete:
 curl -s --max-time $OPERATION_TIMEOUT --keepalive-time $KEEPALIVE_TIME "${WEATHERPRESENTER_API_ADDRESS}/ClosePlaylist" >/dev/null
-if [ "$RC" != 0 ]
+RETURN_CODE=$?
+if [ $RETURN_CODE -ne 0 ]
 then
 	TIME_END=`date +%s`
 	TIME_ELAPSED=$((TIME_END - TIME_BEGIN))
-	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,Couldn't close playlist!" >>$LOG_FILE
+	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,${PLAYLIST_FILEPATH},Couldn't close playlist!" >>$LOG_FILE
 	exit
 else
 	sleep 10
@@ -63,11 +64,12 @@ fi
 
 # Open the test playlist, then sleep to allow the action to complete:
 curl -s --max-time $OPERATION_TIMEOUT --keepalive-time $KEEPALIVE_TIME "${WEATHERPRESENTER_API_ADDRESS}/OpenPlaylist?filepath=${PLAYLIST_FILEPATH}" >/dev/null
-if [ "$RC" != 0 ]
+RETURN_CODE=$?
+if [ $RETURN_CODE -ne 0 ]
 then
 	TIME_END=`date +%s`
 	TIME_ELAPSED=$((TIME_END - TIME_BEGIN))
-	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,Couldn't open playlist!" >>$LOG_FILE
+	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,${PLAYLIST_FILEPATH},Couldn't open playlist!" >>$LOG_FILE
 	exit
 else
 	sleep 15
@@ -75,12 +77,12 @@ fi
 
 # Switch to "edit" mode (and record the time):
 curl -s --max-time $OPERATION_TIMEOUT --keepalive-time $KEEPALIVE_TIME "${WEATHERPRESENTER_API_ADDRESS}/SetPresentationState?state=Editing" >/dev/null
-RC=$?
+RETURN_CODE=$?
 TIME_END=`date +%s`
 TIME_ELAPSED=$((TIME_END - TIME_BEGIN))
-if [ "$RC" != 0 ]
+if [ $RETURN_CODE -ne 0 ]
 then
-	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,Couldn't change to 'Editing' presentation mode!" >>$LOG_FILE
+	echo "`date`,[ERROR],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,${PLAYLIST_FILEPATH},Couldn't change to 'Editing' presentation mode!" >>$LOG_FILE
 else
-	echo "`date`,[SUCCESS],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,Finished" >>$LOG_FILE
+	echo "`date`,[SUCCESS],${WP_HOSTNAME},${TEST_ID},${TIME_ELAPSED}s,${PLAYLIST_FILEPATH},Finished" >>$LOG_FILE
 fi

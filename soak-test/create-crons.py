@@ -18,7 +18,8 @@ for schedule in schedules:
 		cron_hour =   schedule_parts[0].split(':')[0]
 		cron_minute = schedule_parts[0].split(':')[1]
 		cron_hostname = schedule_parts[6]
-		cron_command = '/usr/local/bin/scheduled-test.sh %s' % cron_hostname
+		cron_playlist = schedule_parts[9]
+		cron_command = '/usr/local/bin/scheduled-test.sh %s %s' % (cron_hostname, cron_playlist)
 
 		print('# %s' % schedule.strip('\n'))
 		print('%s %s * * *\t%s\t%s\n' % (cron_minute, cron_hour, cron_user, cron_command))
