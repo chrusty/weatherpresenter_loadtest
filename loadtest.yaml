@@ -8,4 +8,6 @@ addresses:
  - playout2
 playlist: \\server\playlists\playlist.dlp
 sleep: 2s
+testopenplaylist: false
 testopenpopulateplaylist: true
+testtriggerplaylist: false
