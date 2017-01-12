@@ -3,9 +3,15 @@ import sys
 
 cron_user = 'root'
 
-# Open the schedules CSV:
+# Open the schedules CSV and split by '\n' (new-line):
 with open(sys.argv[1]) as schedules_file:
-    schedules = schedules_file.readlines()
+    schedules = schedules_file.read().split('\n')
+
+    # If we only got 1 line then assume that we split with the wrong character, try again with '\r' (carriage-return, the Windows default):
+    if len(schedules) == 1:
+		schedules_file.seek(0)
+		schedules = schedules_file.read().split('\r')
+
 
 # Iterate through it:
 for schedule in schedules:
