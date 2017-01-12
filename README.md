@@ -12,7 +12,6 @@ Config
 * __concurrency__: How many concurrent tests to run
 * __debug__: Run in DEBUG mode
 * __iterations__: Number of times to run each tests
-* __conffile__: Name of a config-file to load
 * __keepalive__: How often to send keepalive packets
 * __addresses__: A list of hostnames / addresses of WeatherPresenter workstations to test against
 * __playlist__: Full path to a playlist to use
